@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive SVG Week 11 Quiz</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <!-- SVG Element -->
+    <svg id="svg-canvas" viewBox="0 0 2560 1440" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0%" y="0%" width="100%" height="10%" id="salmon"></rect>
+        <rect x="0%" y="12%" width="100%" height="85%" id="salmon"></rect>
+    </svg>
+
+    <div id="firework-container"></div>
+
+    <div class="container">
+        <div class="box">
+            <h2>Button 1</h2>
+        </div>
+        <div class="box">
+            <h2>Button 2</h2>
+        </div>
+        <div class="box">
+            <h2>Button 3</h2>
+        </div>
+        <div class="box">
+            <h2>Button 4</h2>
+        </div>
+    </div>
+    <script>
+        // This is part of the design we going to use in out assignment, We are trying to make a fireworks particle system.
+        // We plan to have a title, a block of text, and after that will have a section to display the firworks and below that section, we are going to place 4 buttons.
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the container element for the fireworks
+            var container = document.getElementById('firework-container');
+
+            // Function to create a firework
+            function createFirework(x, y) {
+                // Create a new firework div element
+                var firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = x + 'px';
+                firework.style.bottom = '0';
+                container.appendChild(firework);
+
+                var halfHeight = window.innerHeight / 2;
+
+                // Interval function to animate the firework rising
+                var interval = setInterval(function() {
+                    var currentBottom = parseInt(firework.style.bottom);
+
+                    // If the firework reaches half of the window height, explode it
+                    if (currentBottom >= halfHeight) {
+                        clearInterval(interval);
+                        firework.style.opacity = '0';
+                        explode(firework);
+                    } else {
+                        firework.style.bottom = (currentBottom + 2) + 'px';
+                    }
+                }, 10);
+            }
+
+            // Function to explode a firework
+            function explode(parentFirework) {
+                var particles = 50;
+
+                // Create multiple particles to simulate an explosion
+                for (var i = 0; i < particles; i++) {
+                    var particle = document.createElement('div');
+                    particle.className = 'firework';
+                    particle.style.left = parentFirework.style.left;
+                    particle.style.bottom = parentFirework.style.bottom;
+                    particle.style.backgroundColor = getRandomColor();
+                    container.appendChild(particle);
+
+                    var angle = (Math.random() * 360) * (Math.PI / 180);
+                    var velocity = 5 + Math.random() * 2;
+                    var x = Math.sin(angle) * velocity;
+                    var y = Math.cos(angle) * velocity + 2;
+
+                    // Animate each particle in the explosion
+                    animateParticle(particle, x, y);
+                }
+
+                parentFirework.remove();
+            }
+
+            // Function to animate a particle
+            function animateParticle(particle, x, y) {
+                var posX = parseInt(particle.style.left);
+                var posBottom = parseInt(particle.style.bottom);
+
+                // Interval function to update particle position and simulate gravity
+                var interval = setInterval(function() {
+                    posX += x;
+                    posBottom += y;
+                    y -= 0.05;
+
+                    particle.style.left = posX + 'px';
+                    particle.style.bottom = posBottom + 'px';
+
+                    // If the particle reaches the top of the container, remove it
+                    if (posBottom <= 0) {
+                        particle.remove();
+                        clearInterval(interval);
+                    }
+                }, 20);
+            }
+
+            // Function to generate a random color
+            function getRandomColor(redInputValue, greenInputValue, blueInputValue) {
+                let redOutputValue = redInputValue ?? Math.round(Math.random() * 255);
+                let greenOutputValue = greenInputValue ?? Math.round(Math.random() * 255);
+                let blueOutputValue = blueInputValue ?? Math.round(Math.random() * 255);
+                return `rgb(${redOutputValue},${greenOutputValue},${blueOutputValue})`;
+            }
+
+            // Event listener for mouse click to create fireworks
+            document.addEventListener('click', function(event) {
+                createFirework(event.clientX, event.clientY);
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
